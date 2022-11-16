@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http:/www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{layouts/default_layout}">
+
+<head>
+  <title>SIMPLE WEB SITE</title>
+</head>
+
+<body layout:fragment="content">
+  <section class="d-flex justify-content-center">
+    <div class="container-md mt-5">
+      <div class="form-control text-center">
+        <p class="h3 p-2">회원가입</h1>
+        <p class="px-2">회원 정보를 아래에 입력 해 주세요</p>
+        <input type="text" onblur="sign.user_check(this)" id="username" class="form-control my-2" placeholder="사용자 이름">
+        <input type="text" id="usernameCheck" class="form-control my-2 border-0" placeholder="위에 사용자 이름을 입력 해 주세요!" readonly>
+        <input type="password" onblur="sign.password_check()" id="password" class="form-control my-2" placeholder="비밀번호">
+        <input type="password" onblur="sign.password_check()" id="_password" class="form-control my-2" placeholder="비밀번호 확인">
+        <input type="text" id="passwordCheck" class="form-control border-0" placeholder="위에 비밀번호를 입력 해 주세요." readonly>
+        <button type="button" class="btn btn-secondary my-2" onclick="sign.password_visible(this)">비밀번호 표시</button>
+        <input type="text" id="name" class="form-control my-2" placeholder="이름">
+        <input type="email" id="email" class="form-control my-2" placeholder="이메일">
+        <button type="button" onclick="sign.up()" class="btn btn-primary m-2">가입하기</button>
+      </div>
+    </div>
+  </section>
+  <script type="text/javascript">
+    const sign = {
+
+      data: {
+        username: document.querySelector('#username'),
+        usernameCheck: document.querySelector('#usernameCheck'),
+        password: document.querySelector('#password'),
+        _password: document.querySelector('#_password'),
+        name: document.querySelector('#name'),
+        email: document.querySelector('#email'),
+        passwordCheck: document.querySelector('#passwordCheck')
+      },
+
+      count: {
+        username: false,
+        password: false,
+      },
+
+      state: {
+        password_visible: false
+      },
+
+      user_check: function(input) {
+        if (input.value === "") {
+          input.value = "";
+          sign.count.username = false;
+        } else {
+          const usernameCheckDTO = {username: input.value}; 
+          $.ajax({
+            type: 'post',
+            url: '/api/user/check',
+            async: true,
+            cache: false,
+            contentType: 'application/json',
+            dataType: 'json',
+            data: JSON.stringify(usernameCheckDTO),
+            success: (data)=>{
+              sign.data.usernameCheck.value = "이미 사용 중인 아이디입니다.";
+              sign.count.username = false;
+            }, 
+            error: (error)=>{
+              sign.data.usernameCheck.value = "사용 가능한 아이디입니다.";
+              sign.count.username = true;
+            }
+          })
+        }
+      },
+
+      password_visible: function(input) {
+        if (sign.state.password_visible == false) {
+          input.style.textDecoration = "line-through";
+          sign.data.password.setAttribute('type', 'text');
+          sign.data._password.setAttribute('type', 'text');
+          sign.state.password_visible = true;
+          return;
+        }
+        input.style.textDecoration = "none";
+        sign.data.password.setAttribute('type', 'password');
+        sign.data._password.setAttribute('type', 'password');
+        sign.state.password_visible = false;
+      },
+
+      password_check: function() {
+        const password = sign.data.password.value;
+        const _password = sign.data._password.value;
+        if (password === "" || _password === "") {
+          sign.data.passwordCheck.value = "";
+          return;
+        }
+
+        if (password === _password) {
+          sign.data.passwordCheck.value = "비밀번호가 서로 일치합니다.";
+          sign.count.password = true;
+          return;
+        } 
+        sign.data.passwordCheck.value = "비밀번호를 다시 확인 해 주세요.";
+        sign.count.password = false;
+        return;
+      },
+
+      up: function() {
+        const username = sign.data.username.value;
+        const password = sign.data.password.value;
+        const name = sign.data.name.value;
+        const email = sign.data.email.value;
+
+        if(username === "") {
+          alert("사용자 이름을 입력 해 주세요.");
+          return;
+        }
+        if(password === "") {
+          alert("비밀번호를 입력 해 주세요.");
+          return;
+        }
+        if(name === "") {
+          alert("이름을 입력 해 주세요.");
+          return;
+        }
+        if(email === "") {
+          alert("이메일을 입력 해 주세요.");
+          return;
+        }
+        
+        if (!(sign.count.username && sign.count.password)) {
+          alert("아이디 및 비밀번호를 다시 확인 해 주세요.");
+        }
+
+        const data = {
+          username: username,
+          password: password,
+          name: name,
+          email: email
+        };
+
+        $.ajax({
+          type: 'post',
+          async: true,
+          cache: false,
+          url: '/api/user/add',
+          contentType: 'application/json',
+          data: JSON.stringify(data),
+          dataType: 'json',
+          success: (data) => {
+            alert("회원가입을 완료했습니다.");
+            window.location.href ="/";
+          },
+          error: (error) => {
+            alert("회원가입에 실패했습니다.");
+          }
+        });
+      }
+
+    };
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,57 @@
+server:
+  port: 80
+
+spring:
+  
+  devtools:
+    livereload:
+      enabled: true
+      
+  mustache:
+    cache: false
+
+  freemarker:
+    cache: false
+
+  datasource:
+    hikari:
+      connection-test-query: SELECT 1
+      minimum-idle: 2
+      maximum-pool-size: 5
+      pool-name: SendBugHikariCP
+      auto-commit: false
+    driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
+    url: jdbc:log4jdbc:mariadb://localhost:3306/ezen
+    username: ezen
+    password: r1r2r3
+    type: com.zaxxer.hikari.HikariDataSource
+
+mybatis:
+  type-aliases-package: com.test.project.model.user, com.test.project.model.board
+  mapper-locations: mapper/**/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
+    default-statement-timeout: 30
+
+pagehelper:
+  # DB 종류 선택 (미설정 시 자동감지)
+  helper-dialect: mariadb 
+  # DB 자동 설정 (default: false)
+  auto-dialect: false 
+  # pageSize = 0으로 실행 (default: false)
+  page-size-zero: false
+  # true 일시 0 <= pageNum <= pages 로 실행 (default : false)
+  reasonable: true
+  # RowBound를 사용할 때 offset param을 pageNum으로 사용 (default : false)
+  offset-as-page-num: false
+  # RowBound를 사용할 때 Count Query 수행 (default : false)
+  row-bounds-with-count: false
+  # Runtime에 DB 자동 설정, auto-dialect보다 우선 (default : false)
+  auto-runtime-dialect: false
+  # DB Connection 닫을 지 여부 (default : false)
+  close-conn: true
+  # mapper 방식 사용 시 true 설정 mapper
+  support-methods-arguments: false
+  # Custom Dialect를 만들 때 사용. Dialect를 implements해서 만들어야 함.
+  # 기본값은 com.github.pagehelper.PageHelper
+  

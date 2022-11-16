@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http:/www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{layouts/default_layout}">
+
+<head>
+  <title>SIMPLE WEB SITE</title>
+</head>
+
+<body>
+
+  <body layout:fragment="content">
+    <section class="container">
+      <div class="p-3 pt-md-5 pb-md-4 text-center">
+        <h2 class="cfs-5">Welcome!</h2>
+        <p>간단히 구현해 본 웹 사이트입니다.</p>
+      </div>
+      <div class="row mb-5 text-center my-3">
+        <div class="col-md-4">
+          <div class="card">
+            <div class="card-header">
+              <h3 class="text-primary">회원가입</h1>
+            </div>
+            <div class="card-body">
+              <p>ajax를 활용한 회원가입 구현</p>
+              <ul class="list-unstyled my-4">
+                <li>
+                  <a class="btn btn-primary px-5" th:href="@{/member/signup}">Go</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card">
+            <div class="card-header">
+              <h3 class="text-primary">로그인</h1>
+            </div>
+            <div class="card-body">
+              <p>시큐리티를 활용한 로그인 구현</p>
+              <ul class="list-unstyled my-4">
+                <li>
+                  <a class="btn btn-primary px-5" th:href="@{/member/signin}">Go</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card">
+            <div class="card-header">
+              <h3 class="text-primary">게시판</h1>
+            </div>
+            <div class="card-body">
+              <p>PageHelper를 사용한 게시판 출력</p>
+              <ul class="list-unstyled my-4">
+                <li>
+                  <a class="btn btn-primary px-5" th:href="@{/board/list}">Go</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+   <!-- section two -->
+   <section class="container">
+    <div class="row mb-5 text-center my-3">
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="text-primary">구현예정</h1>
+          </div>
+          <div class="card-body">
+            <p>구현예정</p>
+            <ul class="list-unstyled my-4">
+              <li>
+                <a class="btn btn-primary px-5" href="#">Go</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="text-primary">구현예정</h1>
+          </div>
+          <div class="card-body">
+            <p>구현예정</p>
+            <ul class="list-unstyled my-4">
+              <li>
+                <a class="btn btn-primary px-5" href="#">Go</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="text-primary">구현예정</h1>
+          </div>
+          <div class="card-body">
+            <p>구현예정</p>
+            <ul class="list-unstyled my-4">
+              <li>
+                <a class="btn btn-primary px-5" href="#">Go</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</body>
+
+</html>
