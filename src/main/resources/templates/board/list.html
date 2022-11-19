@@ -1,43 +1,181 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http:/www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-  layout:decorate="~{layouts/default_layout}">
+<html lang="ko" xmlns:th="http:/www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layouts/default_layout}">
 
 <head>
-  <title>SIMPLE WEB SITE</title>
+<title>SIMPLE WEB SITE</title>
 </head>
 
 <body layout:fragment="content">
 
-  <section class="container-fluid">
-    <div class="row">
-      <table class="table table-primarytb_col">
-        <tr>
-          <th>번호</th>
-          <th>제목</th>
-          <th>작성자</th>
-          <th>작성일자</th>
-        </tr>
-        <tr class="table-secondary" th:each="board : ${pageInfo.list}">
-          <td><a th:text="${board.id}"></td>
-          <td><a th:text="${board.title}"></td>
-          <td><a th:text="${board.author}"></td>
-          <td><a th:text="${board.createDate}"></td>
-          <td><a th:text="${board.modifiedDate}"></td>
-        </tr>
-      </table>
-    </div>
-    <div>
-      <ul>
-        <li th:each="num : ${#numbers.sequence(1, pageInfo.pages)}">
-          <a th:href="@{'/board/list?pageNum=' + ${num} + '&pageSize=10'}" th:text="${num}" style="color:blue"></a>
-        </li>
-      </ul>
-    </div>
-  </section>
+	<section class="container-fluid">
+		<board-list></board-list>
+	</section>
 
-  <script type="text/javascript">
+	<script th:inline="javascript">
+		class BoardList extends HTMLElement {
+			$navigateFirstPage
+			$navigateLastPage
+			$hasPreviousPage
+			$hasNextPage
+			$isFirstPage
+			$isLastPage
+			$prePage
+			$nextPage
+			constructor() {
+				super();
+				this.$pageInfo = [[${ pageInfo }]];
+				
+			}
 
-  </script>
+			connectedCallback() {
+				this.render();
+			}
+
+			render() {
+				console.log(this.$pageInfo)
+				this.innerHTML = `
+				<div class="d-flex flex-column justify-content-center align-items-center">
+					<h1>게시판</h1>
+					<table class='table table-hover'>
+						<thead>
+							<tr>
+								<th>번호</th>
+								<th>제목</th>
+								<th>작성자</th>
+								<th>작성일자</th>
+							</tr>
+						</thead>
+						<tbody>
+						${this.$pageInfo.list.map(p =>
+						`<tr>
+								<td>${p.id}</td>
+								<td>${p.title}</td>
+								<td>${p.author}</td>
+								<td>${p.createdDate}</td>
+							</tr>`
+						).join("")}
+						</tbody>
+						<tfoot>
+							<tr>
+								<td colspan="5"><select id="keyword">
+									<option value="title">제목으로 검색</option>
+									<option value="author">작성자로 검색</option>
+									<option value="id">번호로 검색</option>
+								</select></td>
+							</tr>
+							<tr>
+								<td colspan="5"><input class="form-control" type="text" 
+									id="search" placeholder="검색어 입력 후 Enter" />
+								</td>
+							</tr>
+						</tfoot>
+					</table>
+					<ul class='d-flex flex-columns'>
+					${this.$pageInfo.navigatepageNums.map(n => {
+						return `<li class="px-3"><a href="/board/list?pageNum=${n}">${n}</a></li>`
+					}).join("")}
+					</ul>
+				</div>
+			`;
+				$('#search').on('keypress', (e) => {
+					if (e.keyCode == 13) {
+						const keyword = $('#keyword').val();
+						const search = $('#search').val();
+						const data = { keyword: keyword, search: search };
+						$.ajax({
+							type: 'get',
+							url: '/board/list/search',
+							async: true,
+							cache: false,
+							contentType: 'application/x-www-form-urlencoded',
+							dataType: 'json',
+							data: data
+						}).done((data) => {
+							this.$pageInfo = data;
+							this.connectedCallback();
+						});
+					};
+				});
+			}
+		}
+
+		$(document).ready(function () {
+			customElements.define("board-list", BoardList);
+		});
+
+	</script>
 </body>
 
 </html>
+
+<!-- 
+<div class="d-flex flex-column justify-content-center align-items-center">
+			<h1>게시판 목록</h1>
+			<table class="table">
+				<thead>
+					<tr>
+						<th>번호</th>
+						<th>제목</th>
+						<th>작성자</th>
+						<th>작성일자</th>
+						<th>수정일자</th>
+					</tr>
+				</thead>
+				<board-list>
+					<template id="boardTableTemplate">
+						<tbody>
+							<tr th:each="board : ${pageInfo.list}" th:onclick="'goDetail('+${board.id}+')'">
+								<td th:text="${board.id}"></td>
+								<td th:text="${board.title}"></td>a
+								<td th:text="${board.author}"></td>
+								<td th:text="${board.createdDate}"></td>
+								<td th:text="${board.modifiedDate}"></td>
+							</tr>
+						</tbody>
+					</template>
+				</board-list>
+			</table>
+		</div>
+
+<tbody id="board-table">
+	<tr 
+		th:each="board : ${pageInfo.list}" 
+		th:onclick="'goDetail('+${board.id}+')'">
+		<td th:text="${board.id}"></td>
+		<td th:text="${board.title}"></td>
+		<td th:text="${board.author}"></td>
+		<td th:text="${board.createdDate}"></td>
+		<td th:text="${board.modifiedDate}"></td>
+	</tr>
+</tbody>
+<tfoot>
+	<tr>
+		<td colspan="5"><select id="keyword">
+				<option value="title">제목으로 검색</option>
+				<option value="author">작성자로 검색</option>
+				<option value="id">번호로 검색</option>
+		</select></td>
+	</tr>
+	<tr>
+		<td colspan="5"><input class="form-control" type="text"
+			id="search" placeholder="검색어 입력 후 Enter" /></td>
+	</tr>
+</tfoot>
+</table>
+<ul id="boardList" class="d-flex flex-row justify-content-center">
+<th:block
+	th:each="num, numStat : ${#numbers.sequence(pageInfo.navigateFirstPage, pageInfo.navigateLastPage)}">
+	<li class="h4 px-3" style="list-style-type: none;"
+		th:if="${numStat.first} and ${pageInfo.pageNum}>10"><a
+		th:href="@{'/board/list?pageNum='+${pageInfo.navigateFirstPage-1}}"
+		th:text="prev"></a></li>
+	<li class="h4 px-3" style="list-style-type: none;"><a
+		th:href="@{'/board/list?pageNum='+${num}}" th:text="${num}"></a></li>
+	<li class="h4 px-3" style="list-style-type: none;"
+		th:if="${numStat.last} and ${num} != ${pageInfo.pages}"><a
+		th:href="@{'/board/list?pageNum='+${pageInfo.navigateLastPage+1}}"
+		th:text="next"></a></li>
+</th:block>
+</ul> -->

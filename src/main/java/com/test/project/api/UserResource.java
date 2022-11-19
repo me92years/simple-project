@@ -17,32 +17,33 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 public class UserResource {
-  private final UserService userService;
-  private final AuthenticationManager authenticationManager;
+	private final JwtTokenProvider jwtTokenProvider;
+	private final UserService userService;
+	private final AuthenticationManager authenticationManager;
 
-  @PostMapping("/api/user/check")
-  public Long user_check(@RequestBody User user) {
-    return userService.findUserByUsername(user.getUsername()).getId();
-  }
+	@PostMapping("/api/user/check")
+	public Long user_check(@RequestBody User user) {
+		return userService.findUserByUsername(user.getUsername()).getId();
+	}
 
-  @PostMapping("/api/user/add")
-  public Long user_add(@RequestBody User user) {
-    return userService.addUser(user);
-  }
+	@PostMapping("/api/user/add")
+	public Long user_add(@RequestBody User user) {
+		return userService.addUser(user);
+	}
 
-  @PostMapping("/api/user/auth")
-  public String user_auth(@RequestBody User user) {
-    try {
-      Authentication authentication = authenticationManager.authenticate(returnAuthenticationToken(user)); 
-      return JwtTokenProvider.returnAccessToken(authentication);     
-    } catch(Exception e) {
-      throw new BadCredentialsException("자격 증명 실패");
-    }
-    
-  }
+	@PostMapping("/api/user/auth")
+	public String user_auth(@RequestBody User user) {
+		try {
+			Authentication authentication = authenticationManager.authenticate(returnAuthenticationToken(user));
+			return jwtTokenProvider.returnAccessToken(authentication);
+		} catch (Exception e) {
+			throw new BadCredentialsException("자격 증명 실패");
+		}
 
-  private Authentication returnAuthenticationToken(User user) {
-    return new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword());
-  }
+	}
+
+	private Authentication returnAuthenticationToken(User user) {
+		return new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword());
+	}
 
 }

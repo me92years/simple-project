@@ -4,6 +4,31 @@
 
 <mapper namespace="com.test.project.model.board.BoardMapper">
   <select id="findAll" resultType="com.test.project.model.board.Board">
-    SELECT * FROM board_table
+    SELECT 
+    	`ID`, `TITLE`, `CONTENT`, `AUTHOR`, `FILE_NAME`, `CREATED_DATE`, `MODIFIED_DATE`
+    FROM 
+    	`board_table`
+    <where>
+    	<if test='search != null and search != ""'>
+    		<choose>
+    			<when test='keyword == "id"'>
+    				AND `ID` LIKE CONCAT(#{search})
+    			</when>
+    			<when test='keyword == "title"'>
+    				AND `TITLE` LIKE CONCAT('%',#{search},'%')
+    			</when>
+    			<when test='keyword == "author"'>
+    				AND `AUTHOR` LIKE CONCAT('%',#{search},'%')
+    			</when>
+    		</choose>
+    	</if>
+    </where>
+  </select>
+  <select id="findBoardById" resultType="com.test.project.model.board.Board">
+  	SELECT 
+  		`ID`, `TITLE`, `CONTENT`, `AUTHOR`, `FILE_NAME`, `CREATED_DATE`, `MODIFIED_DATE`
+  	FROM
+  		`board_table`
+  	WHERE ID = #{id}	 
   </select>
 </mapper>

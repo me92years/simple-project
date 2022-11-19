@@ -7,21 +7,35 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-public class JwtAuthenticationFilter extends OncePerRequestFilter{
+import com.test.project.provider.JwtTokenProvider;
 
-  @Override
-  protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-      throws ServletException, IOException {
-    
-    filterChain.doFilter(request, response);
-  }
+public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-  @Override
-  protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-    return request.getServletPath().equals("/api/user/auth");
-  }
-  
-  
+	private final JwtTokenProvider provider;
+	
+	public JwtAuthenticationFilter(JwtTokenProvider jwtTokenprovider) {
+		this.provider = jwtTokenprovider;
+	}
+
+	@Override
+	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+			throws ServletException, IOException {
+		String accessToken = request.getHeader("Authorization");
+		System.out.println(accessToken);
+		if (accessToken != null && provider.validateJwtToken(request, accessToken)) {
+			Authentication authentication = provider.getAuthentication(accessToken);
+			
+		}
+		
+		filterChain.doFilter(request, response);
+	}
+
+	@Override
+	protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+		return request.getServletPath().equals("/api/user/auth");
+	}
+
 }

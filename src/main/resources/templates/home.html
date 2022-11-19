@@ -68,13 +68,13 @@
       <div class="col-md-4">
         <div class="card">
           <div class="card-header">
-            <h3 class="text-primary">구현예정</h1>
+            <h3 class="text-primary">회원 정보</h1>
           </div>
           <div class="card-body">
-            <p>구현예정</p>
+            <p>로그인 후 회원 상세 정보 구현</p>
             <ul class="list-unstyled my-4">
               <li>
-                <a class="btn btn-primary px-5" href="#">Go</a>
+                <button type="button" id="btn-userDetail" class="btn btn-primary px-5">Go</a>
               </li>
             </ul>
           </div>
@@ -112,6 +112,30 @@
       </div>
     </div>
   </section>
+  <script th:inline="javascript">
+  	$('#btn-userDetail').on('click', ()=> {
+  		const authorization = localStorage.getItem("Authorization");
+  		
+     	if (authorization == null) {
+     		alert("로그인이 필요한 기능입니다.")
+     		return;
+     	} 
+     	
+     	$.ajax({
+     		type: 'post',
+     		async: true,
+     		dataType: 'text',
+     		beforeSend : function(xhr) {
+     			xhr.setRequestHeader("Authorization", authorization);
+     		},
+        error: function(xhr, status, error) {
+          alert("에러");
+        },
+        success: function(uri) {
+          alert("성공");
+        } 
+     	});
+  	})
+  </script>
 </body>
-
 </html>

@@ -15,22 +15,23 @@ import lombok.ToString;
 @Setter
 @ToString
 public class User implements UserDetails {
-  private Long id;
-  private String username;
-  private String password;
-  private String name;
-  private String email;
-  private String roles;
-  
-  @Override
-  public Collection<? extends GrantedAuthority> getAuthorities() {
-    return List.of(new SimpleGrantedAuthority(roles));
-  }
-  
-  private boolean isAccountNonExpired = true;
-  private boolean isAccountNonLocked = true;
-  private boolean isCredentialsNonExpired = true;
-  private boolean isEnabled = true;
+	private static final long serialVersionUID = 1L;
 
-  
+	private Long id;
+	private String username;
+	private String password;
+	private String name;
+	private String email;
+	private String roles;
+
+	@Override
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		return List.of(new SimpleGrantedAuthority(roles));
+	}
+
+	private boolean isAccountNonExpired = true;
+	private boolean isAccountNonLocked = true;
+	private boolean isCredentialsNonExpired = true;
+	private boolean isEnabled = true;
+
 }

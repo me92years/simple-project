@@ -14,11 +14,15 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.test.project.filter.JwtAuthenticationFilter;
+import com.test.project.provider.JwtTokenProvider;
+
+import lombok.RequiredArgsConstructor;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
-  
+  private final JwtTokenProvider jwtTokenprovider;
   private static final HttpMethod GET = HttpMethod.GET;
   private static final HttpMethod POST = HttpMethod.POST;
 
@@ -36,11 +40,11 @@ public class SecurityConfig {
   SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http.csrf().disable().httpBasic().disable().formLogin().disable();
     http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-    http.addFilterBefore(new JwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+    http.addFilterBefore(new JwtAuthenticationFilter(jwtTokenprovider), UsernamePasswordAuthenticationFilter.class);
     return http
     .authorizeHttpRequests()
     .antMatchers(POST, "/api/user/auth", "/api/user/add", "/api/user/check").permitAll()
-    .antMatchers(POST, "/api/user/**").authenticated()
+    .antMatchers(POST, "/api/**").authenticated()
     .antMatchers(GET, "/**").permitAll()
     .and()
     .build();

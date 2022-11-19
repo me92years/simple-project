@@ -13,10 +13,17 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class BoardService {
-  private final BoardMapper boardMapper;
+	private final BoardMapper boardMapper;
 
-  public PageInfo<Board> findAll(BoardSearchDto boardSearchDto) {
-    PageHelper.startPage(boardSearchDto.getPageNum(), boardSearchDto.getPageSize());
-    return PageInfo.of(boardMapper.findAll());
-  }
+	public PageInfo<Board> findAll(BoardSearchDto boardSearchDto) {
+		PageHelper.startPage(boardSearchDto.getPageNum(), boardSearchDto.getPageSize());
+		PageInfo<Board> pageInfo = PageInfo.of(boardMapper.findAll(boardSearchDto));
+		
+		return pageInfo;
+	}
+
+	public Board findBoardById(int id) {
+		Board board = boardMapper.findBoardById(id);
+		return board;
+	}
 }
